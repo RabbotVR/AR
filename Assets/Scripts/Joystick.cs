@@ -49,7 +49,7 @@ namespace UnityStandardAssets.CrossPlatformInput
 			{
 				m_VerticalVirtualAxis.Update(delta.y);
 			}
-            NetworkClientUI.SendJoystickInfo(-delta.x, delta.y);
+            //NetworkClientUI.SendJoystickInfo(-delta.x, delta.y);
 		}
 
 		void CreateVirtualAxes()

@@ -46,7 +46,7 @@ public class NetworkManager : MonoBehaviour {
 
 		yield return new WaitForSeconds(1f);
 
-		string playerName = "Rabbot";
+		string playerName = "Scientist";
 		PlayerJSON playerJSON = new PlayerJSON(playerName);
 		string data = JsonUtility.ToJson(playerJSON);
 		socket.Emit("play", new JSONObject(data));

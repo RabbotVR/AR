@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour {
 	public JoyStickerController JoyStick;
 	public SocketIOComponent socketIO;
 	public Player	playerGameObj;
+    public button GetButton;
 
 	void Start () {
 	
@@ -18,6 +19,9 @@ public class GameController : MonoBehaviour {
 		socketIO.On("PLAY", onUserPlay);
 		socketIO.On("MOVE", onUserMove);
 		socketIO.On("USER_DISCONNECTED", OnUserDisconnected );
+        ////////////////////////////////////////////////////////
+         // socketIO.On("Light", OnLight);
+        ////////////////////////////////////////////////////////
 		Debug.Log("Game is start");
 		JoyStick.gameObject.SetActive(false);
 		StartCoroutine( "CalltoServer" );
@@ -33,7 +37,29 @@ public class GameController : MonoBehaviour {
 		socketIO.Emit("MOVE", new JSONObject(data));
 
 	}
+    ////////////////////////////////////////////////////////
+    public void OnLight(){
+  
 
+        socketIO.Emit("Light");
+        Debug.Log("LightClicked");
+        // StartCoroutine(timeLimit());
+
+    }
+    public void OnSound()
+    {
+
+
+        socketIO.Emit("Sound");
+        Debug.Log("SoundClicked");
+        // StartCoroutine(timeLimit());
+
+    }
+
+    //IEnumerator timeLimit(){
+    //    yield return new WaitForSeconds(3000);
+    //}
+    ////////////////////////////////////////////////////////
 	private IEnumerator CalltoServer(){
 
 		yield return new WaitForSeconds(1f);

@@ -1,30 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.UI;
-
-public class button : MonoBehaviour {
-	private const string URL = "https://api.particle.io/v1/devices/300027001047343438323536/led?access_token=fb1ce304c1fd5d2b54b45bbda201a32c43b98cec";
-	public Text responseText;
-
-	public void Request()
-	{ 
-		//WWW request = new WWW (URL);
-		StartCoroutine (Upload());
-	
-	}
+﻿using System.Collections; using System.Collections.Generic; using UnityEngine; using UnityEngine.Networking; using UnityEngine.UI;   public class button : MonoBehaviour {     //need to change both device id and access token     private const string URL = "https://api.particle.io/v1/devices/26002d000647343138333038/rabbot?access_token=23a029208881361ba9649c6a44ae30c6ace15b79";     public Text responseText; 
 
 
-	private IEnumerator Upload()
-	{
-		WWWForm form = new WWWForm();
-		form.AddField("led", "ledon");
-		UnityWebRequest www = UnityWebRequest.Post((URL), form);
-		www.chunkedTransfer = false;////ADD THIS LINE
-		yield return www.Send();
-
-		//yield return req;
-		//responseText.text = req.text;
-	}
-}
+	public void ServoRequest()     {         StartCoroutine(UploadServo());         ////send request to node
+        GameController servobutton = GetComponent<GameController>();
+        servobutton.OnSound();         }      public void LEDRequest()     {         StartCoroutine(UploadLED());         GameController lightbutton = GetComponent<GameController>();         lightbutton.OnLight();     }       private IEnumerator UploadServo()     {         WWWForm form = new WWWForm();         form.AddField("servo", "servoon");         UnityWebRequest www = UnityWebRequest.Post((URL), form);         www.chunkedTransfer = false;////ADD THIS LINE         yield return www.Send();      }     private IEnumerator UploadLED()     {         WWWForm form = new WWWForm();         form.AddField("led", "ledon");         UnityWebRequest www = UnityWebRequest.Post((URL), form);         www.chunkedTransfer = false;////ADD THIS LINE         yield return www.Send();       } }

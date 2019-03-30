@@ -87,6 +87,9 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
         var colliderComponents = GetComponentsInChildren<Collider>(true);
         var canvasComponents = GetComponentsInChildren<Canvas>(true);
 
+        //Disable scanning canvas
+        GameObject.Find("ARCamera").GetComponentInChildren<Canvas>().enabled = false;
+
         // Enable rendering:
         foreach (var component in rendererComponents)
             component.enabled = true;
@@ -98,6 +101,7 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
         // Enable canvas':
         foreach (var component in canvasComponents)
             component.enabled = true;
+
     }
 
 
@@ -106,6 +110,9 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
         var rendererComponents = GetComponentsInChildren<Renderer>(true);
         var colliderComponents = GetComponentsInChildren<Collider>(true);
         var canvasComponents = GetComponentsInChildren<Canvas>(true);
+
+        //Enable scanning canvas
+        GameObject.Find("ARCamera").GetComponentInChildren<Canvas>().enabled = true;
 
         // Disable rendering:
         foreach (var component in rendererComponents)

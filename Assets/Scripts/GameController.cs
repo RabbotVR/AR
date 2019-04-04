@@ -7,38 +7,53 @@ using SocketIO;
 public class GameController : MonoBehaviour {
 
 
-	public LoginPanelController LoginPanel;
-	public JoyStickerController JoyStick;
+	//public LoginPanelController LoginPanel;
+	//public JoyStickerController JoyStick;
 	public SocketIOComponent socketIO;
 	public Player	playerGameObj;
     public button GetButton;
+    public TimerScript timerScript;
+    public bool GameStart = false;
 
 	void Start () {
 	
 		socketIO.On("USER_CONNECTED", OnUserConnected );
 		socketIO.On("PLAY", onUserPlay);
-		socketIO.On("MOVE", onUserMove);
+		//socketIO.On("MOVE", onUserMove);
 		socketIO.On("USER_DISCONNECTED", OnUserDisconnected );
         ////////////////////////////////////////////////////////
          // socketIO.On("Light", OnLight);
         ////////////////////////////////////////////////////////
 		Debug.Log("Game is start");
-		JoyStick.gameObject.SetActive(false);
+		//JoyStick.gameObject.SetActive(false);
 		StartCoroutine( "CalltoServer" );
-		LoginPanel.plaBtn.onClick.AddListener(OnClickPlayBtn);
-		JoyStick.OnCommandMove += OnCommandMove;
+//		LoginPanel.plaBtn.onClick.AddListener(OnClickPlayBtn);
+		//JoyStick.OnCommandMove += OnCommandMove;
 	}
 
-	void OnCommandMove (Vector3 vec3)
+	void Update()
 	{
-		Dictionary<string, string> data = new Dictionary<string, string>();
-		Vector3 position = new Vector3( vec3.x,vec3.y,vec3.z );
-		data["position"] = position.x+","+position.y+","+position.z;
-		socketIO.Emit("MOVE", new JSONObject(data));
-
+        if (GameObject.Find("Rabbot") != null && GameObject.Find("ScientistB") != null)
+        {
+            GameStart = true;
+        }
+        else
+        {
+            GameStart = false;
+        }
+        CheckGameStatus();
 	}
-    ////////////////////////////////////////////////////////
-    public void OnLight(){
+
+	//void OnCommandMove (Vector3 vec3)
+	//{
+	//	Dictionary<string, string> data = new Dictionary<string, string>();
+	//	Vector3 position = new Vector3( vec3.x,vec3.y,vec3.z );
+	//	data["position"] = position.x+","+position.y+","+position.z;
+	//	socketIO.Emit("MOVE", new JSONObject(data));
+
+	//}
+	////////////////////////////////////////////////////////
+	public void OnLight(){
   
 
         socketIO.Emit("Light");
@@ -56,6 +71,14 @@ public class GameController : MonoBehaviour {
 
     }
 
+    void SendUserName(){
+         Dictionary<string, string> data = new Dictionary<string, string>();
+         data["name"] = "ScientistA";
+         data["position"] = "300,300,300";
+         socketIO.Emit("PLAY", new JSONObject(data));
+
+    }
+
     //IEnumerator timeLimit(){
     //    yield return new WaitForSeconds(3000);
     //}
@@ -66,31 +89,32 @@ public class GameController : MonoBehaviour {
 
 		Debug.Log("Send message to the server");
 		socketIO.Emit("USER_CONNECT");
+        SendUserName();
 
 	}
 
-	void OnClickPlayBtn ()
-	{
-		if(LoginPanel.inputField.text != ""  ){
+	//void OnClickPlayBtn ()
+	//{
+	//	if(LoginPanel.inputField.text != ""  ){
 	
-			Dictionary<string, string> data = new Dictionary<string, string>();
-			data["name"] = LoginPanel.inputField.text;
-			Vector3 position  = new Vector3(0,0,0);
-			data["position"] = position.x+","+position.y+","+position.z;
-			socketIO.Emit("PLAY", new JSONObject(data));
+	//		Dictionary<string, string> data = new Dictionary<string, string>();
+	//		data["name"] = LoginPanel.inputField.text;
+	//		Vector3 position  = new Vector3(0,0,0);
+	//		data["position"] = position.x+","+position.y+","+position.z;
+	//		socketIO.Emit("PLAY", new JSONObject(data));
 
 
-		}else{
-			LoginPanel.inputField.text = "Please enter your name again ";
-		}
-	}
+	//	}else{
+	//		LoginPanel.inputField.text = "Please enter your name again ";
+	//	}
+	//}
 
 	void onUserPlay (SocketIOEvent obj)
 	{
 
-		LoginPanel.gameObject.SetActive(false);
-		JoyStick.gameObject.SetActive(true);
-		JoyStick.ActivejooyStick();
+		//LoginPanel.gameObject.SetActive(false);
+		//JoyStick.gameObject.SetActive(true);
+		//JoyStick.ActivejooyStick();
 
 		GameObject player =  GameObject.Instantiate( playerGameObj.gameObject, playerGameObj.position, Quaternion.identity) as GameObject;
 		Player playerCom = player.GetComponent<Player>();
@@ -98,7 +122,7 @@ public class GameController : MonoBehaviour {
 		playerCom.playerName = JsonToString( obj.data.GetField("name").ToString(), "\"");
 		player.transform.position = JsonToVecter3( JsonToString(obj.data.GetField("position").ToString(), "\"") );
 		playerCom.id = JsonToString(obj.data.GetField("id").ToString(), "\"");
-		JoyStick.playerObj = player;
+		//JoyStick.playerObj = player;
 	}
 
 	void OnUserDisconnected (SocketIOEvent obj)
@@ -108,12 +132,12 @@ public class GameController : MonoBehaviour {
 
 	}
 
-	void onUserMove (SocketIOEvent obj)
-	{
-		GameObject player = GameObject.Find(  JsonToString( obj.data.GetField("name").ToString(), "\"") ) as GameObject;
-		player.transform.position =  JsonToVecter3( JsonToString(obj.data.GetField("position").ToString(), "\"") );
+	//void onUserMove (SocketIOEvent obj)
+	//{
+	//	GameObject player = GameObject.Find(  JsonToString( obj.data.GetField("name").ToString(), "\"") ) as GameObject;
+	//	player.transform.position =  JsonToVecter3( JsonToString(obj.data.GetField("position").ToString(), "\"") );
 
-	}
+	//}
 
 	string  JsonToString( string target, string s){
 
@@ -133,15 +157,25 @@ public class GameController : MonoBehaviour {
 
 	}
 
+
 	void OnUserConnected (SocketIOEvent obj)
 	{
 		Debug.Log( "all user born on this client" );
 
-		GameObject otherPlater =  GameObject.Instantiate( playerGameObj.gameObject, playerGameObj.position, Quaternion.identity ) as GameObject;
-		Player otherPlayerCom = otherPlater.GetComponent<Player>();
-		otherPlayerCom.playerName = JsonToString(obj.data.GetField("name").ToString(), "\"");
-		otherPlater.transform.position =  JsonToVecter3( JsonToString(obj.data.GetField("position").ToString(), "\"") );
-		otherPlayerCom.id = JsonToString(obj.data.GetField("id").ToString(), "\"");
+        GameObject otherPlater =  GameObject.Instantiate( playerGameObj.gameObject, playerGameObj.position, Quaternion.identity ) as GameObject;
+        Player otherPlayerCom = otherPlater.GetComponent<Player>();
+        otherPlayerCom.playerName = JsonToString(obj.data.GetField("name").ToString(), "\"");
+        otherPlater.transform.position =  JsonToVecter3( JsonToString(obj.data.GetField("position").ToString(), "\"") );
+        otherPlayerCom.id = JsonToString(obj.data.GetField("id").ToString(), "\"");
+
 
 	}
+
+    void CheckGameStatus(){
+        if (GameStart == true)
+        {
+            //Debug.Log("Game start!!!!!!");
+            timerScript.CountTrigger();
+        }
+    }
 }
